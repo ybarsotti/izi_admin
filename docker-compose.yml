@@ -1,0 +1,30 @@
+version: "3.7"
+
+services:
+
+  py:
+    build: ./docker/python
+    volumes:
+      - ./:/app
+    ports:
+      - 8000:8000
+
+  db:
+    image: postgres:11-alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: database
+    ports:
+      - 15432:5432
+
+  redis:
+    image: redis:5.0
+    ports:
+      - 16379:6379
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - 1025:1025
+      - 8025:8025

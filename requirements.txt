@@ -1,0 +1,2 @@
+# Não altere esse arquivo. Insira suas dependencias dentro de docker/python/requirements.txt
+-r docker/python/requirements.txt
