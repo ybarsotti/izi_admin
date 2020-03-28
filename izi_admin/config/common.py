@@ -32,16 +32,26 @@ class Common(Configuration):
 
     ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*,')
 
+    APPEND_SLASH = True
 
     # Application definition
 
     INSTALLED_APPS = [
+        # apps
+        'apps.users',
+        'apps.companies',
+        'apps.teams',
+        
+        # Default
         'django.contrib.admin',
         'django.contrib.auth',
         'django.contrib.contenttypes',
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
+
+        # Graphene
+        'graphene_django',
     ]
 
     MIDDLEWARE = [
@@ -54,7 +64,14 @@ class Common(Configuration):
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
     ]
 
+    AUTHENTICATION_BACKENDS = [
+        'graphql_jwt.backends.JSONWebTokenBackend',
+        'django.contrib.auth.backends.ModelBackend',
+    ]
+
     ROOT_URLCONF = 'izi_admin.urls'
+
+    AUTH_USER_MODEL = 'users.User'
 
     TEMPLATES = [
         {
@@ -84,6 +101,7 @@ class Common(Configuration):
         )
     }
 
+    DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
 
     # Password validation
     # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -122,3 +140,11 @@ class Common(Configuration):
     # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
     STATIC_URL = '/static/'
+
+    # Graphene
+    GRAPHENE = {
+        'SCHEMA': 'izi_admin.schema.schema',
+        'MIDDLEWARE': [
+            'graphql_jwt.middleware.JSONWebTokenMiddleware',
+        ],
+    }
