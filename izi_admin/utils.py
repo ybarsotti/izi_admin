@@ -46,7 +46,7 @@ class SoftDeleteMixin(models.Model):
     """
     Modelo base para soft deletes (deleted_at)
     """
-    deleted_at = models.DateTimeField(null=True, blank=True)
+    deleted_at = models.DateTimeField(null=True, blank=True, editable=False)
 
     objects = SoftDeleteManager()
     original_objects = models.Manager()
