@@ -1,5 +1,5 @@
 from .common import Common
 
 
-class Develop(Common):
+class Staging(Common):
     DEBUG = True
