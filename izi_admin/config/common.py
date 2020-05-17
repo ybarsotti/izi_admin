@@ -41,7 +41,9 @@ class Common(Configuration):
         'apps.users',
         'apps.companies',
         'apps.teams',
-        
+        'apps.projects',
+        'apps.cards',
+
         # Default
         'django.contrib.admin',
         'django.contrib.auth',

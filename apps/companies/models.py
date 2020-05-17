@@ -14,7 +14,7 @@ class Company(DefaultDatesMixin, SoftDeleteMixin, models.Model):
     owner = models.ForeignKey('users.User', related_name='owner_company', blank=False, null=False,
                               on_delete=models.CASCADE)
 
-    name = models.CharField(_('Nome da companhia'), max_length=128, default='New companies')
+    name = models.CharField(_('Nome da companhia'), max_length=128, default='Nova companhia')
     icon = models.ImageField(_('Imagem da companhia'), upload_to=company_directory_path, blank=True, null=True)
 
     class Meta:

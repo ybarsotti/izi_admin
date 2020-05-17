@@ -66,6 +66,8 @@ class User(DefaultDatesMixin, AbstractUser):
         (('student'), _('Student')),
     )
 
+    favorite_projects = models.ManyToManyField('projects.Project', blank=True, verbose_name=_('Projetos favoritos'))
+
     email = models.EmailField(_('email'), max_length=256, unique=True,
                               error_messages={
                                   'unique': _("Já existe um usuario cadastrado com este email."),
