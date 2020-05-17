@@ -17,4 +17,4 @@ class UserAmin(admin.ModelAdmin):
         (_('Datas importantes'), {'fields': ('last_login',)}),
     )
 
-    readonly_fields = ('last_login', 'password', )
+    readonly_fields = ('last_login', )
