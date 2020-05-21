@@ -34,6 +34,8 @@ class Common(Configuration):
 
     APPEND_SLASH = True
 
+    CORS_ORIGIN_ALLOW_ALL = True
+
     # Application definition
 
     INSTALLED_APPS = [
@@ -54,9 +56,11 @@ class Common(Configuration):
 
         # Graphene
         'graphene_django',
+        'corsheaders',
     ]
 
     MIDDLEWARE = [
+        'corsheaders.middleware.CorsMiddleware',
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.common.CommonMiddleware',
@@ -152,3 +156,31 @@ class Common(Configuration):
             'graphql_jwt.middleware.JSONWebTokenMiddleware',
         ],
     }
+
+    GRAPHQL_JWT = {
+        'JWT_VERIFY_EXPIRATION': False,
+        'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
+        'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=14)
+    }
+
+    ## REDIS & CELERY ##
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": config('REDIS_URL', default='redis://redis:6379'),
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+            },
+            "KEY_PREFIX": "zuekse_"
+        }
+    }
+
+    CELERY_BROKER_URL = config('REDIS_URL', default='redis://redis:6379')
+    CELERY_RESULT_BACKEND = config('REDIS_URL', default='redis://redis:6379')
+    CELERY_ACCEPT_CONTENT = ['application/json']
+    CELERY_RESULT_SERIALIZER = 'json'
+    CELERY_TASK_SERIALIZER = 'json'
+    # in seconds
+    CELERYD_TASK_TIME_LIMIT = 60
+    CELERY_IGNORE_RESULT = True

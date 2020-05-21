@@ -1,5 +1,5 @@
 import graphene
-from graphene_django import DjangoObjectType
+from graphene_django import DjangoObjectType, DjangoConnectionField
 from graphql_jwt.decorators import login_required
 from graphql_relay import from_global_id
 
@@ -9,12 +9,8 @@ from apps.teams.models import Team
 class TeamType(DjangoObjectType):
     class Meta:
         model = Team
-        description = 'Cria um novo time'
+        description = 'Objeto de time'
         interfaces = (graphene.relay.Node, )
-
-
-class CreateTeam(graphene.relay.ClientIDMutation):
-    pass
 
 
 class AddFavoriteProject(graphene.relay.ClientIDMutation):
@@ -40,4 +36,18 @@ class Mutation(graphene.AbstractType):
 
 
 class Query(graphene.AbstractType):
-    pass
+    teams = DjangoConnectionField(TeamType)
+
+    @login_required
+    def resolve_teams(self, info, **kwargs):
+        """
+        Retorna os times desse usuário
+        :param info:
+        :type info:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
+        """
+        user = info.context.user
+        return Team.objects.filter(company__owner=user)

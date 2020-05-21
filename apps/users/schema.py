@@ -1,11 +1,28 @@
+import django_filters
 import graphene
 import graphql_jwt
 from django.core import exceptions
 from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 from graphql import GraphQLError
 from graphql_jwt import shortcuts
+from graphql_jwt.decorators import login_required
 
 from .models import User
+
+
+class UsuarioFilter(django_filters.FilterSet):
+    class Meta:
+        model = User
+        fields = {
+            'first_name': ['icontains', ],
+            'email': ['icontains', ],
+        }
+
+    @property
+    def qs(self):
+        # faz com que a listagem de usuarios retorne apenas usuarios ativos na aplicação
+        return super(UsuarioFilter, self).qs.filter(is_active=True)
 
 
 class UserNode(DjangoObjectType):
@@ -54,22 +71,17 @@ class CreateUser(graphene.relay.ClientIDMutation):
         return CreateUser(token=token, user=new_user, success=True)
 
 
-class Query(object):
-    pass
-
-
-# ObtainJSONWebToken customizado para retornar o usuario juntamente com a token
-class ObtainJSONWebToken(graphql_jwt.relay.JSONWebTokenMutation):
-    user = graphene.Field(UserNode)
-
-    @classmethod
-    def resolve(cls, root, info, **kwargs):
-        return cls(user=info.context.user)
-
-
-class Mutation(graphene.AbstractType):
+class Mutation(graphene.ObjectType):
     create_user = CreateUser.Field()
 
 
-class Query(graphene.AbstractType):
-    pass
+class Query(graphene.ObjectType):
+    user_list = DjangoFilterConnectionField(UserNode, filterset_class=UsuarioFilter)
+
+    @login_required
+    def resolve_user_list(self, info, **kwargs):
+
+        if 'email__icontains' not in kwargs:
+            return []
+
+        return UsuarioFilter(kwargs).qs

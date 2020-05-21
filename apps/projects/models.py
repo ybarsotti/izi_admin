@@ -21,6 +21,7 @@ class Project(DefaultDatesMixin, SoftDeleteMixin, models.Model):
     column = models.ManyToManyField('Column', verbose_name=_('Colunas'))
 
     name = models.CharField(_('Nome do projeto'), max_length=64, null=False, blank=False)
+    image = models.ImageField(_('Imagem do projeto'), upload_to='project_images/', blank=True, null=True)
 
     class Meta:
         verbose_name = _('Projeto')
