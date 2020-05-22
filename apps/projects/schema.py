@@ -14,6 +14,7 @@ class ProjectsType(DjangoObjectType):
 
 class Query(graphene.ObjectType):
     projects = DjangoConnectionField(ProjectsType)
+    project_detail = graphene.Field(ProjectsType, id=graphene.String())
 
     @login_required
     def resolve_projects(self, info, **kwargs):
@@ -28,3 +29,22 @@ class Query(graphene.ObjectType):
         """
         user = info.context.user
         return Project.objects.filter(company__user__id=user.id)
+
+    @login_required
+    def resolve_project_detail(self, info, id, **kwargs):
+        """
+        Retorna os dados pro quadro
+        :param id:
+        :type id:
+        :param info:
+        :type info:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
+        """
+        user = info.context.user
+        qs = Project.objects.filter(id=id, user__in=[user])
+        if not qs.exists():
+            return None
+        return qs.first()
